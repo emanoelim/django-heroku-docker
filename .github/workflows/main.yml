@@ -1,0 +1,43 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    container: docker:stable
+    env:
+      DOCKER_DRIVER: overlay2
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v1
+      - name: Set environment variables
+        run: |
+          echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
+      - name: Log in to GitHub Packages
+        run: |
+          docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Pull images
+        run: |
+          docker pull $WEB_IMAGE:latest || true
+      - name: Build images
+        run: |
+          docker-compose -f docker-compose.ci.yml build
+      - name: Push images
+        run: |
+          docker push $WEB_IMAGE:latest
