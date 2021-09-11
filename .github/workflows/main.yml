@@ -30,6 +30,11 @@ jobs:
         run: |
           docker build --cache-from $WEB_IMAGE:latest --tag $WEB_IMAGE:latest --file ./Dockerfile "."
       - name: Run tests
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: runner
+          POSTGRES_PASSWORD: ""
+          DATABASE_URL: postgres://runner@postgres:5432/test
         run: |
           docker run -d --name web -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
           docker exec web python manage.py test
