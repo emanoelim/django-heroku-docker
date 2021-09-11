@@ -37,7 +37,8 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     needs: build
-    container: docker pull ghcr.io/emanoelim/django_heroku_docker/web:latest
+    container: 
+      image: docker pull ghcr.io/emanoelim/django_heroku_docker/web:latest
     services:
       postgres:
         image: postgres
