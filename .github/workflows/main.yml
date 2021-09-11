@@ -33,7 +33,7 @@ jobs:
         run: |
           docker run -d --name web -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
           docker exec web python manage.py test
-          flake8 hello_django --max-line-length=100
+          docker exec web flake8 hello_django --max-line-length=100
           black hello_django --check
           isort hello_django --check
       - name: Push images
