@@ -37,7 +37,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     needs: build
-    container: ${{env.WEB_IMAGE}}:latest
+    container: $WEB_IMAGE:latest
     services:
       postgres:
         image: postgres
