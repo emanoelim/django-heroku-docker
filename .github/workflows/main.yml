@@ -54,7 +54,7 @@ jobs:
           docker pull $WEB_IMAGE:latest || true
       - name: Tests
         run: |
-          docker run $WEB_IMAGE:latest --name web
+          docker run aaaaaaaaa:latest --name web
           docker exec web python manage.py test
           flake8 hello_django --max-line-length=100
           black hello_django --check
