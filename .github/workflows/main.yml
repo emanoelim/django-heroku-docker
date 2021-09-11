@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY)/web
+  WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
 
 jobs:
   build:
@@ -47,6 +47,9 @@ jobs:
       POSTGRES_PASSWORD: ""
       DATABASE_URL: postgres://runner@postgres:5432/test
     steps:
+      - name: Set environment variables
+        run: |
+          echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
       - name: Tests
         run: |
           python manage.py test
