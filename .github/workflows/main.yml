@@ -53,7 +53,7 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip
           pip install --upgrade setuptools
-          pip install -r requirements.txt
+          pip install -r ./requirements.txt
           python manage.py collectstatic --no-input
           python manage.py migrate_schemas --no-input
           python manage.py test
