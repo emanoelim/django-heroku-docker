@@ -37,7 +37,7 @@ jobs:
           docker pull $WEB_IMAGE:latest || true
       - name: Build images
         run: |
-          docker-compose -f docker-compose.ci.yml build
+          docker build --cache-from $WEB_IMAGE:latest --tag $WEB_IMAGE:latest --file ./Dockerfile "."
       - name: Push images
         run: |
           docker push $WEB_IMAGE:latest
