@@ -37,7 +37,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     needs: build
-    container: python:3.8-alpine
+    container: echo $IMAGE:latest
     services:
       postgres:
         image: postgres
@@ -49,13 +49,6 @@ jobs:
     steps:
       - name: Tests
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install --upgrade pip
-          pip install --upgrade setuptools
-          pip install -r ./requirements.txt
-          python manage.py collectstatic --no-input
-          python manage.py migrate_schemas --no-input
           python manage.py test
           flake8 hello_django --max-line-length=100
           black hello_django --check
