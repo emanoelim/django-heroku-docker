@@ -11,7 +11,7 @@ on:
     branches: [ main ]
 
 env:
-  WEB_IMAGE: echo ${PERSONAL_ACCESS_TOKEN} | ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
+  WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
