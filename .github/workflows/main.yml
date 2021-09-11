@@ -48,6 +48,9 @@ jobs:
       POSTGRES_PASSWORD: ""
       DATABASE_URL: postgres://runner@postgres:5432/test
     steps:
+      - name: Log in to GitHub Packages
+        run: |
+          echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
       - name: Tests
         run: |
           python manage.py test
