@@ -29,7 +29,7 @@ jobs:
           echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
       - name: Log in to GitHub Packages
         run: |
-          docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+          echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Pull images
@@ -37,7 +37,21 @@ jobs:
           docker pull $WEB_IMAGE:latest || true
       - name: Build images
         run: |
-          docker-compose -f docker-compose.ci.yml build
+          docker build --cache-from $WEB_IMAGE:latest --tag $WEB_IMAGE:latest --file ./Dockerfile "."
       - name: Push images
         run: |
           docker push $WEB_IMAGE:latest
+          
+  deploy:
+    name: Deploy to Heroku
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v1
+      - name: Deploy
+        run: |
+          sudo apt-get update -qy
+          sudo apt-get install -y ruby-dev
+          sudo gem install dpl
+          sudo dpl --provider=heroku --app=${{ secrets.HEROKU_APP_NAME }} --api-key=${{ secrets.HEROKU_AUTH_TOKEN }}
