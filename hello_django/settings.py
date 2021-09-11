@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='foo')
 
 DEBUG = int(os.environ.get('DEBUG', default=0))
 
-ALLOWED_HOSTS = 'localhost', '127.0.0.1', 'evening-tundra-50688.herokuapp.com'
+ALLOWED_HOSTS = 'localhost', '127.0.0.1', 'cryptic-fjord-13124.herokuapp.com'
 
 
 # Application definition
