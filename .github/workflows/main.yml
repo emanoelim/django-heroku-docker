@@ -37,6 +37,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     needs: build
+    container: python:3.8-alpine
     services:
       postgres:
         image: postgres
@@ -46,16 +47,16 @@ jobs:
       POSTGRES_PASSWORD: ""
       DATABASE_URL: postgres://runner@postgres:5432/test
     steps:
-      - name: Log in to GitHub Packages
-        run: |
-          echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
-      - name: Pull images
-        run: |
-          docker pull $WEB_IMAGE:latest || true
       - name: Tests
         run: |
-          docker run -d -p 8007:8765 --name web $WEB_IMAGE:latest
-          docker exec web python manage.py test
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install --upgrade setuptools
+          pip install -r requirements.txt
+          python manage.py collectstatic --no-input
+          python manage.py migrate_schemas --no-input
+          python manage.py test
           flake8 hello_django --max-line-length=100
           black hello_django --check
           isort hello_django --check
