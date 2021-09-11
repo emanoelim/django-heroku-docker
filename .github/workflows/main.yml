@@ -54,8 +54,8 @@ jobs:
           docker pull $WEB_IMAGE:latest || true
       - name: Tests
         run: |
-          docker run -d --name django-heroku -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
-          docker exec django-heroku python manage.py test
+          docker run -d -p 8007:8765 $WEB_IMAGE:latest web
+          docker exec web python manage.py test
           flake8 hello_django --max-line-length=100
           black hello_django --check
           isort hello_django --check
