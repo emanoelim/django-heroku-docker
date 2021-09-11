@@ -46,6 +46,8 @@ jobs:
     name: Deploy to Heroku
     runs-on: ubuntu-latest
     needs: build
+    env:
+      HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
     steps:
       - name: Checkout master
         uses: actions/checkout@v1
@@ -54,4 +56,4 @@ jobs:
           apt-get update -qy
           apt-get install -y ruby-dev
           gem install dpl
-          dpl --provider=heroku --app=${{ secrets.HEROKU_APP_NAME }} --api-key=${{ secrets.HEROKU_AUTH_TOKEN }}
+          dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=${{ secrets.HEROKU_AUTH_TOKEN }}
