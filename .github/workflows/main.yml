@@ -52,21 +52,9 @@ jobs:
             pip install --upgrade setuptools
             pip install -r requirements.txt
             python manage.py collectstatic --no-input
-            python manage.py migrate_schemas --no-input
+            python manage.py migrate --no-input
             python manage.py test
             flake8 hello_django --max-line-length=100
-#         - name: Set environment variables
-#           run: echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
-#         - name: Log in to GitHub Packages
-#           run: echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
-#         - name: Pull image
-#           run: docker pull $WEB_IMAGE:latest || true
-#         - name: Run tests and lint
-#           run: |
-#             docker run -d --network="host" --name web -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
-#             docker exec web python manage.py migrate
-#             docker exec web python manage.py test
-#             docker exec web flake8 hello_django --max-line-length=100
           
   deploy:
     name: Deploy to Heroku
