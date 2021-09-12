@@ -8,6 +8,10 @@ on:
 
 env:
   WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
+  POSTGRES_DB: test
+  POSTGRES_USER: runner
+  POSTGRES_PASSWORD: ""
+  DATABASE_URL: postgres://runner@postgres:5432/test
 
 jobs:
   build:
@@ -17,17 +21,13 @@ jobs:
     services:
       postgres:
         image: postgres
-    env:
-      POSTGRES_DB: test
-      POSTGRES_USER: runner
-      POSTGRES_PASSWORD: ""
-      DATABASE_URL: postgres://runner@postgres:5432/test
     steps:
       - name: Checkout master
         uses: actions/checkout@v1
       - name: Set environment variables
         run: |
-          echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
+          echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}})" >> $GITHUB_ENV
+          echo "DATABASE_URL"=$(echo ${{env.DATABASE_URL}})" >> $GITHUB_ENV
       - name: Log in to GitHub Packages
         run: |
           echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
