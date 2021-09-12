@@ -46,13 +46,14 @@ jobs:
         - name: Run tests and lint
           run:
             python -m venv .venv
-            source .venv/bin/activate     
+            source .venv/bin/activate
             pip install --upgrade pip
             pip install --upgrade setuptools
             pip install -r requirements.txt
             python manage.py collectstatic --no-input
             python manage.py migrate_schemas --no-input
             python manage.py test
+            flake8 hello_django --max-line-length=100
 #         - name: Set environment variables
 #           run: echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
 #         - name: Log in to GitHub Packages
