@@ -13,15 +13,6 @@ jobs:
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
     steps:
       - name: Checkout master
         uses: actions/checkout@v1
@@ -33,19 +24,42 @@ jobs:
         run: docker pull $WEB_IMAGE:latest || true
       - name: Build images
         run: docker build --cache-from $WEB_IMAGE:latest --tag $WEB_IMAGE:latest --file ./Dockerfile "."
-      - name: Run tests
-        run: |
-          docker run -d --network="host" --name web -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
-          docker exec web python manage.py migrate
-          docker exec web python manage.py test
-          docker exec web flake8 hello_django --max-line-length=100
       - name: Push image
         run: docker push $WEB_IMAGE:latest
+        
+  test:
+      name: Run tests
+      runs-on: ubuntu-latest
+      needs: build
+      services:
+        postgres:
+          image: postgres
+          env:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+          ports:
+          - 5432:5432
+      steps:
+        - name: Checkout master
+          uses: actions/checkout@v1
+        - name: Set environment variables
+          run: echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
+        - name: Log in to GitHub Packages
+          run: echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+        - name: Pull image
+          run: docker pull $WEB_IMAGE:latest || true
+        - name: Run tests and lint
+          run: |
+            docker run -d --network="host" --name web -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
+            docker exec web python manage.py migrate
+            docker exec web python manage.py test
+            docker exec web flake8 hello_django --max-line-length=100
           
   deploy:
     name: Deploy to Heroku
     runs-on: ubuntu-latest
-    needs: build
+    needs: [ build, test ]
     steps:
       - name: Checkout master
         uses: actions/checkout@v1
