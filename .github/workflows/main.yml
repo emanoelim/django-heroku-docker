@@ -21,7 +21,6 @@ jobs:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_HOST: localhost
         ports:
           - 5432:5432
     steps:
@@ -41,7 +40,7 @@ jobs:
           docker build --cache-from $WEB_IMAGE:latest --tag $WEB_IMAGE:latest --file ./Dockerfile "."
       - name: Run tests
         run: |
-          docker run -d --name web -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
+          docker run -d --network="host" --name web -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
           docker exec web python manage.py migrate
           docker exec web python manage.py test
           docker exec web flake8 hello_django --max-line-length=100
