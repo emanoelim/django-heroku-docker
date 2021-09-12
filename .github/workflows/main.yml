@@ -20,6 +20,7 @@ jobs:
         image: postgres
         env:
           POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -30,7 +31,6 @@ jobs:
         run: |
           echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
           echo "DATABASE_URL=$(echo ${{env.DATABASE_URL}} )" >> $GITHUB_ENV
-          echo $GITHUB_ENV
       - name: Log in to GitHub Packages
         run: |
           echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
