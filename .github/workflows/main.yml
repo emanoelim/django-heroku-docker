@@ -26,26 +26,21 @@ jobs:
       - name: Checkout master
         uses: actions/checkout@v1
       - name: Set environment variables
-        run: |
-          echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
+        run: echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
       - name: Log in to GitHub Packages
-        run: |
-          echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
-      - name: Pull images
-        run: |
-          docker pull $WEB_IMAGE:latest || true
+        run: echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+      - name: Pull image
+        run: docker pull $WEB_IMAGE:latest || true
       - name: Build images
-        run: |
-          docker build --cache-from $WEB_IMAGE:latest --tag $WEB_IMAGE:latest --file ./Dockerfile "."
+        run: docker build --cache-from $WEB_IMAGE:latest --tag $WEB_IMAGE:latest --file ./Dockerfile "."
       - name: Run tests
         run: |
           docker run -d --network="host" --name web -e "PORT=8765" -e "DEBUG=1" -p 8007:8765 $WEB_IMAGE:latest
           docker exec web python manage.py migrate
           docker exec web python manage.py test
           docker exec web flake8 hello_django --max-line-length=100
-      - name: Push images
-        run: |
-          docker push $WEB_IMAGE:latest
+      - name: Push image
+        run: docker push $WEB_IMAGE:latest
           
   deploy:
     name: Deploy to Heroku
