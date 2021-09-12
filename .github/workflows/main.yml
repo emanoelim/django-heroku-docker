@@ -8,10 +8,10 @@ on:
 
 env:
   WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
-  POSTGRES_DB: test
-  POSTGRES_USER: runner
-  POSTGRES_PASSWORD: ""
-  DATABASE_URL: postgres://runner@postgres:5432/test
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
   
 jobs:
   build:
