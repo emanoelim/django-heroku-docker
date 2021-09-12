@@ -45,6 +45,7 @@ jobs:
           uses: actions/checkout@v1
         - name: Run tests and lint
           run: |
+            sudo apt-get install gcc
             python -m venv .venv
             source .venv/bin/activate
             pip install --upgrade pip
