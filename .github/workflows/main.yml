@@ -22,7 +22,7 @@ jobs:
         run: echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
       - name: Pull image
         run: docker pull $WEB_IMAGE:latest || true
-      - name: Build images
+      - name: Build image
         run: docker build --cache-from $WEB_IMAGE:latest --tag $WEB_IMAGE:latest --file ./Dockerfile "."
       - name: Push image
         run: docker push $WEB_IMAGE:latest
